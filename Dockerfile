@@ -1,25 +1,15 @@
-FROM node:18-slim
+FROM n8nio/n8n:latest
 
-# Install FFmpeg
+# Switch to root to install packages
+USER root
+
+# Install FFmpeg and clean up in the same layer
 RUN apt-get update && \
     apt-get install -y ffmpeg && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Install n8n
-RUN npm install -g n8n
+# Switch back to the n8n user
+USER node
 
-# Create a user to run n8n
-RUN useradd -m -s /bin/bash n8n
-
-# Set working directory
-WORKDIR /home/n8n
-
-# Switch to the created user
-USER n8n
-
-# Expose n8n default port
-EXPOSE 5678
-
-# Start n8n
-CMD ["n8n"]
+# The official n8n image already has the correct WORKDIR, USER, EXPOSE, and CMD
